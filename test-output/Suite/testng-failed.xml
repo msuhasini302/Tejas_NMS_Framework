@@ -9,10 +9,10 @@
     <classes>
       <class name="automation.test.TestCase1">
         <methods>
-          <include name="notEnteringCredentials" invocation-numbers="0 0 1 1 2 2 3 3"/>
           <include name="beforeTestMethod"/>
           <include name="afterMethod"/>
           <include name="afterTest"/>
+          <include name="enteringCredentials"/>
           <include name="beforeMethod"/>
         </methods>
       </class> <!-- automation.test.TestCase1 -->
@@ -23,10 +23,10 @@
     <classes>
       <class name="automation.test.TestCase1">
         <methods>
-          <include name="notEnteringCredentials" invocation-numbers="0 0 1 1 2 2 3 3"/>
           <include name="beforeTestMethod"/>
           <include name="afterMethod"/>
           <include name="afterTest"/>
+          <include name="enteringCredentials"/>
           <include name="beforeMethod"/>
         </methods>
       </class> <!-- automation.test.TestCase1 -->

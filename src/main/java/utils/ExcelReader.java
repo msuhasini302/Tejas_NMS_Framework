@@ -12,94 +12,64 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.testng.annotations.DataProvider;
 
 import com.google.common.collect.Table.Cell;
 
 public class ExcelReader {
-	
-	// File excelFile = new File(System.getProperty("user.dir") +
-	// "\\src\\test\\resources\\testData\\CRM_TestData.xlsx");
-	
-	@DataProvider(name = "testData1")
-	public Map<String, String>[] getData1() throws IOException {
-		File excelFile = new File(
-				System.getProperty("user.dir") + "\\src\\test\\resources\\testData\\CRM_TestData.xlsx");
 
-		FileInputStream inputStream = new FileInputStream(excelFile);
+	private Workbook workbook;
+	 public ExcelReader() {
+	    }
 
-		Workbook workbook = WorkbookFactory.create(inputStream);
-		Sheet sheet = workbook.getSheet("Sheet1");
-
-		int rowCount = sheet.getPhysicalNumberOfRows();
-		int colCount = sheet.getRow(0).getPhysicalNumberOfCells();
-
-		List<Map<String, String>> dataMap = new ArrayList<>();
-
-		for (int i = 1; i < rowCount; i++) {
-			Row rowCells = sheet.getRow(i);
-			Map<String, String> testData = new HashMap<>();
-			for (int j = 0; j < colCount; j++) {
-				String columnName = sheet.getRow(0).getCell(j).getStringCellValue();
-				
-				// String cellValue = rowCells.getCell(j).getStringCellValue();
-				
-				org.apache.poi.ss.usermodel.Cell cell = rowCells.getCell(j);
-				String cellValue = "";
-				if (cell != null) {
-					cellValue = cell.getStringCellValue();
-				}
-				testData.put(columnName, cellValue);
-			}
-			
-			dataMap.add(testData);
+	public ExcelReader(String filePath) {
+		try {
+			FileInputStream fileInputStream = new FileInputStream(new File(filePath));
+			workbook = new XSSFWorkbook(fileInputStream);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		workbook.close();
-		inputStream.close();
-
-		Map<String, String>[] dataArray = dataMap.toArray(new Map[dataMap.size()]);
-
-		return dataArray;
-
 	}
 
-	@DataProvider(name = "testData2")
-	public Map<String, String>[] getData2() throws IOException {
-		File excelFile = new File(System.getProperty("user.dir") + "\\src\\test\\resources\\testData\\CRM_TestData.xlsx");
-		FileInputStream inputStream = new FileInputStream(excelFile);
+	public Map<String, String> getDataById(String sheetName, String uniqueId) {
+		Map<String, String> testData = new HashMap<>();
+		Sheet sheet = workbook.getSheet(sheetName);
 
-		Workbook workbook = WorkbookFactory.create(inputStream);
-		Sheet sheet = workbook.getSheet("Sheet2");
+		if (sheet != null) {
+			int rowCount = sheet.getPhysicalNumberOfRows();
+			int colCount = sheet.getRow(0).getPhysicalNumberOfCells();
 
-		int rowCount = sheet.getPhysicalNumberOfRows();
-		int colCount = sheet.getRow(0).getPhysicalNumberOfCells();
+			for (int i = 1; i < rowCount; i++) {
+				Row rowCells = sheet.getRow(i);
+				String currentUniqueId = rowCells.getCell(0).getStringCellValue(); // Assuming unique ID is in the first
+																					// column
 
-		List<Map<String, String>> dataMap = new ArrayList<>();
-
-		for (int i = 1; i < rowCount; i++) {
-			Row rowCells = sheet.getRow(i);
-			Map<String, String> testData = new HashMap<>();
-			for (int j = 0; j < colCount; j++) {
-				String columnName = sheet.getRow(0).getCell(j).getStringCellValue();
-				
-				// String cellValue = rowCells.getCell(j).getStringCellValue();
-				
-				org.apache.poi.ss.usermodel.Cell cell = rowCells.getCell(j);
-				String cellValue = "";
-				if (cell != null) {
-					cellValue = cell.getStringCellValue();
+				if (currentUniqueId.equals(uniqueId)) {
+					for (int j = 1; j < colCount; j++) {
+						String columnName = sheet.getRow(0).getCell(j).getStringCellValue();
+						org.apache.poi.ss.usermodel.Cell cell = rowCells.getCell(j);
+						String cellValue = "";
+						if (cell != null) {
+							cellValue = cell.getStringCellValue();
+						}
+						testData.put(columnName, cellValue);
+					}
+					break;
 				}
-				testData.put(columnName, cellValue);
 			}
-			dataMap.add(testData);
 		}
-		workbook.close();
-		inputStream.close();
 
-		Map<String, String>[] dataArray = dataMap.toArray(new Map[dataMap.size()]);
+		return testData;
+	}
+	  
 
-		return dataArray;
-
+	public void close() {
+		try {
+			workbook.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
